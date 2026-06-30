@@ -1,0 +1,163 @@
+### Playground de Requisições do Firecrawl Local (ARES-V3)
+# Este arquivo pode ser executado diretamente usando a extensão "REST Client" no VS Code
+# ou convertido em comandos curl convencionais.
+
+@baseUrl = http://localhost:3002
+
+###
+# @name ScrapeBasico
+# 1. Scrape Básico
+# Converte qualquer URL pública em Markdown estruturado limpo.
+POST {{baseUrl}}/v1/scrape
+Content-Type: application/json
+
+{
+  "url": "https://example.com"
+}
+
+
+###
+# @name ScrapeVisual
+# 2. Scrape Visual Avançado
+# Retorna Markdown, código HTML original e tira um Screenshot visual real da página (PNG/Base64).
+POST {{baseUrl}}/v1/scrape
+Content-Type: application/json
+
+{
+  "url": "https://example.com",
+  "formats": ["markdown", "html", "screenshot"]
+}
+
+
+###
+# @name ScrapeComAcoes
+# 3. Navegação Agentiva (Ações Playwright)
+# Executa cliques, rolagens de tela e digitações de forma dinâmica antes de extrair os dados.
+# Útil para passar por modais, preencher buscas ou interagir com SPAs.
+POST {{baseUrl}}/v1/scrape
+Content-Type: application/json
+
+{
+  "url": "https://www.google.com",
+  "formats": ["markdown"],
+  "actions": [
+    {
+      "type": "write",
+      "text": "Firecrawl",
+      "selector": "textarea[name='q']"
+    },
+    {
+      "type": "press",
+      "key": "Enter"
+    },
+    {
+      "type": "wait",
+      "milliseconds": 2000
+    }
+  ]
+}
+
+
+###
+# @name ExtraçãoComIA
+# 4. Extração Estruturada de Dados via LLM
+# Usa IA local (Ollama) ou externa para extrair um JSON estruturado da página com base em um schema definido.
+# (Certifique-se de que o Ollama esteja rodando ou que uma API Key de LLM esteja configurada no .env)
+POST {{baseUrl}}/v1/scrape
+Content-Type: application/json
+
+{
+  "url": "https://example.com",
+  "formats": ["json"],
+  "jsonOptions": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "O título principal da página"
+        },
+        "paragraphs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Lista com os parágrafos de texto da página"
+        }
+      },
+      "required": ["title", "paragraphs"]
+    }
+  }
+}
+
+
+###
+# @name CrawlAssincrono
+# 5. Rastreamento Profundo (Crawl Assíncrono)
+# Inicia um rastreamento recursivo de múltiplos links a partir de uma URL base.
+# Retorna um `id` de job para acompanhar o progresso.
+POST {{baseUrl}}/v1/crawl
+Content-Type: application/json
+
+{
+  "url": "https://example.com",
+  "limit": 5,
+  "scrapeOptions": {
+    "formats": ["markdown"]
+  }
+}
+
+
+###
+# @name StatusDoCrawl
+# 6. Checar Status do Crawl
+# Substitua o ID abaixo pelo ID retornado na chamada anterior para checar o progresso ou coletar os resultados.
+@crawlJobId = SEU_JOB_ID_AQUI
+GET {{baseUrl}}/v1/crawl/{{crawlJobId}}
+
+
+###
+# @name BuscaWeb
+# 7. Busca Web Integrada (/v1/search)
+# Busca na web e retorna os resultados estruturados. Usa fallback automático para DuckDuckGo.
+POST {{baseUrl}}/v1/search
+Content-Type: application/json
+
+{
+  "query": "Novidades do Node 22",
+  "limit": 3
+}
+
+
+###
+# @name MapSite
+# 8. Mapeamento de URLs (pré-passo do generate_llmstxt)
+POST {{baseUrl}}/v1/map
+Content-Type: application/json
+
+{
+  "url": "https://httpbin.org"
+}
+
+
+###
+# @name BatchScrape
+# 9. Batch Scrape — múltiplas páginas de uma vez
+POST {{baseUrl}}/v1/batch/scrape
+Content-Type: application/json
+
+{
+  "urls": [
+    "https://httpbin.org",
+    "https://httpbin.org/html"
+  ],
+  "formats": ["markdown"],
+  "onlyMainContent": true
+}
+
+
+###
+# @name HealthCheck
+# 10. Health Check da API
+GET {{baseUrl}}/e2e-test
+

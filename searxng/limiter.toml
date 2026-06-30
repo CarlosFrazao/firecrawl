@@ -1,0 +1,15 @@
+# limiter.toml — Configuração mínima do bot detection/limiter do SearXNG
+# Arquivo obrigatório para suprimir o aviso de inicialização
+
+[real_ip]
+x_for = 1
+ipv4_prefix = 32
+ipv6_prefix = 48
+
+[botdetection.ip_lists]
+block_ip = []
+pass_ip = []
+
+[botdetection.ip_limit]
+filter_link_local = false
+link_token = false

@@ -1,0 +1,46 @@
+# Configuração mínima do SearXNG com suporte a JSON API
+use_default_settings: true
+
+server:
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "TROQUE_POR_UMA_CHAVE_SECRETA_ALEATORIA" # Gere com: python3 -c "import secrets; print(secrets.token_hex(32))"
+  image_proxy: true
+  limiter: false # Desativa limiter de taxa e validação de IP/headers para conexões locais
+  proxies:
+    http: http://host.docker.internal:3017
+    https: http://host.docker.internal:3017
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  formats:
+    - html
+    - json # Obrigatório para integração da API
+
+enabled_plugins: []
+
+engines:
+  - name: google
+    engine: google
+    shortcut: go
+    timeout: 3.0
+    active: true
+
+  - name: bing
+    engine: bing
+    shortcut: bi
+    timeout: 3.0
+    active: true
+
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: dd
+    timeout: 3.0
+    active: true
+
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    timeout: 2.0
+    active: true
